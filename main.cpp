@@ -114,7 +114,7 @@ int main() {
             lamda/=dist(aproxTpm[4],aproxTpm[0],aproxTpm[2])*dist(aproxTpm[5],aproxTpm[0],aproxTpm[3]);
             double d=1-lamda;
             if(d<t){
-            
+            //joderrrrrrrrrrrrrrrrrrr
             }else{
                 polAprox.push_back(lsr.back());
                 //lsr.pop_back();
