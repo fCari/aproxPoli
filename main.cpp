@@ -16,9 +16,12 @@ using namespace cv;
 /*
  * 
  */
-double dist(){
-    double res;
-    return res;
+double calcDis(Point2i p1/*pt*/,Point2i p2,Point2i p3){
+    double dis=0.0;
+    double m=double(p2.y-p3.y)/double(p2.x-p3.x);    
+     dis=abs(double(-m*p1.x)+double(p1.y)+double(m*p2.x)-double(p2.y))/(double)sqrt((double)pow(-m,2.0)+1);
+     
+    return (double)dis;
 }
 int len(){
     int res;
@@ -35,8 +38,7 @@ bool buscarPts(Point2i v, Point2i tmp){
     return false;
 }
 int main() {
-
-    Mat img=imread("/home/fredy/imagenes/img/poligono.jpg",0);
+    Mat img=imread("/home/system/imagenes/img/binary2.jpg",0);
     Mat res=Mat::zeros(img.rows,img.cols, CV_8UC1);
     for(int i=0;i<img.rows;i++){
         for(int j=0;j<img.cols;j++){
@@ -98,43 +100,70 @@ int main() {
                     ls.pop_back();
                 }
         }
+
+  for(list<Point2i>::iterator it=lsr.begin();it!=lsr.end();++it){
+      res.at<uchar>((*it).y,(*it).x)=80;
+        
+  }
+    namedWindow( "imagenes1",CV_WINDOW_KEEPRATIO);
+    imshow("imagenes1",res);
+    waitKey(0);
+    cout<<" ,,, "<<lsr.size();
+    getchar();
     int n=lsr.size();
     list<Point2i> polAprox;
-    vector<Point2i> aproxTpm;
-    int t=5;
-    int lamda=0;
-    for(int i=0;i<n;i++){
-        aproxTpm.push_back(lsr.back());lsr.pop_back();
-        aproxTpm.push_back(lsr.back());lsr.pop_back();
-        aproxTpm.push_back(lsr.back());lsr.pop_back();
-        aproxTpm.push_back(lsr.back());lsr.pop_back();
-        aproxTpm.push_back(lsr.back());lsr.pop_back();
-        for(list<Point2i>::iterator it=lsr.begin();it!=lsr.end();++it){
-            lamda=dist(aproxTpm[4],aproxTpm[0],aproxTpm[3])*dist(aproxTpm[5],aproxTpm[0],aproxTpm[2]);
-            lamda/=dist(aproxTpm[4],aproxTpm[0],aproxTpm[2])*dist(aproxTpm[5],aproxTpm[0],aproxTpm[3]);
-            double d=1-lamda;
-            if(d<t){
-            //joderrrrrrrrrrrrrrrrrrr
-            }else{
-                polAprox.push_back(lsr.back());
+    Point2i aproxTpm[6];
+    double t=0.2;
+    double lamda=9.0;
+   
+        polAprox.push_back(lsr.back());
+        aproxTpm[0]=lsr.back();lsr.pop_back();lsr.pop_back();
+        aproxTpm[1]=lsr.back();lsr.pop_back();
+        aproxTpm[2]=lsr.back();
+        int cont=0;
+        cout<<" holassas"<<lsr.size()<<endl;
+        getchar();
+        list<Point2i>::iterator it=lsr.begin();
+        while(it!=lsr.end()){
+             
+            lamda=calcDis(aproxTpm[2],aproxTpm[0],aproxTpm[1]);
+          
+
+            cout<<" el valor de  lamda: "<<aproxTpm[2]<<" , "<<aproxTpm[0]<<" , "<<aproxTpm[1]<<" , lamda ::"<<abs(lamda)<<endl;
+           
+            if(lamda<t){
+                ++it;
+                aproxTpm[2]=(*it);
+                
+                
+            cout<<" Parte1 : "<<aproxTpm[0]<<" , "<<aproxTpm[1]<<" , "<<aproxTpm[2]<<endl;
+          //  getchar();
+            }else{// es una esquina por lo tanto 
+                --it;
+                polAprox.push_back((*it));++it;
+                aproxTpm[0]=(*it);++it;++it;
+                aproxTpm[1]=(*it);++it;
+                aproxTpm[2]=(*it);
                 //lsr.pop_back();
+                cout<<" Parte2 : "<<aproxTpm[0]<<" , "<<aproxTpm[1]<<" , "<<aproxTpm[2]<<" >>> "<<*(++it)<<endl;
+              //  getchar();
             }
-        }
-    
+            cont++;
+            if(cont==lsr.size())
+                break;
     }
-   /* cout<<" ::::-lst->"<<lsr.size()<<", ls: "<<ls.size()<<endl;
-    for (std::list<Point2i>::iterator it=lsr.begin(); it != lsr.end(); ++it){
+    cout<<" ::::-lst->"<<polAprox.size()<<", ls: "<<polAprox.size()<<endl;
+    for (std::list<Point2i>::iterator it=polAprox.begin(); it != polAprox.end(); ++it){
         //std::cout << ' ' << *it<<endl;
         //getchar();
-        res.at<uchar>((*it).y,(*it).x)=80;
-         namedWindow( "imagenes",CV_WINDOW_KEEPRATIO);
+        res.at<uchar>((*it).y,(*it).x)=255;
+        //circle(res,(*it),4,0,-1,8,6);
+    }
+             namedWindow( "imagenes",CV_WINDOW_KEEPRATIO);
         imshow("imagenes",res);
         
         waitKey(0);
-    }*/
-       namedWindow( "imagenes",CV_WINDOW_KEEPRATIO);
-    imshow("imagenes",res);
-    waitKey(0);
+     
   
             
     return 0;
